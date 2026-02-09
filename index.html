@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Von Restorff Effect | Interactive Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'lab-dark': '#0f172a',
+                        'lab-accent': '#38bdf8',
+                        'lab-danger': '#f43f5e',
+                        'lab-success': '#22c55e',
+                        'lab-warning': '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both infinite',
+                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 5px;
+        }
+
+        /* Spotlight Effect Helpers */
+        .spotlight-overlay {
+            background: radial-gradient(circle 150px at var(--x) var(--y), transparent 0%, rgba(15, 23, 42, 0.95) 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .blur-target {
+            filter: blur(5px);
+            transition: filter 0.2s ease;
+        }
+        
+        .unblur {
+            filter: blur(0);
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        
+        .animate-shake-custom {
+            animation: shake 2s cubic-bezier(.36,.07,.19,.97) both infinite;
+            transform-origin: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-lab-dark/80 backdrop-blur-md border-b border-white/10 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-brain text-lab-accent text-2xl mr-3"></i>
+                    <span class="font-bold text-xl tracking-tight">Isolation Effect</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="hover:bg-white/10 px-3 py-2 rounded-md text-sm font-medium transition">Intro</a>
+                        <a href="#color" class="hover:bg-white/10 px-3 py-2 rounded-md text-sm font-medium transition">Color</a>
+                        <a href="#motion" class="hover:bg-white/10 px-3 py-2 rounded-md text-sm font-medium transition">Motion</a>
+                        <a href="#focus" class="hover:bg-white/10 px-3 py-2 rounded-md text-sm font-medium transition">Focus</a>
+                        <a href="#memory" class="hover:bg-white/10 px-3 py-2 rounded-md text-sm font-medium transition text-lab-warning">Memory</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="intro" class="h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+        <div class="text-center max-w-4xl px-4 z-10">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-lab-accent to-purple-500">
+                The Von Restorff Effect
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-400 mb-10 leading-relaxed">
+                "When multiple homogeneous stimuli are presented, the stimulus that differs from the rest is more likely to be remembered."
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#color" class="bg-lab-accent hover:bg-sky-400 text-lab-dark font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg shadow-sky-500/20">
+                    Start Experiment
+                </a>
+            </div>
+            <p class="mt-8 text-sm text-gray-500">Scroll to explore the 4 Interactive Modes</p>
+        </div>
+        
+        <!-- Animated arrow -->
+        <div class="absolute bottom-10 animate-bounce">
+            <i class="fa-solid fa-chevron-down text-2xl text-gray-500"></i>
+        </div>
+    </section>
+
+    <!-- SECTION 1: COLOR ISOLATION -->
+    <section id="color" class="min-h-screen flex flex-col items-center justify-center py-20 relative bg-slate-900 border-t border-white/5">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white"><span class="text-lab-danger">01.</span> Color Isolation</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto px-4">The eye is biologically programmed to detect contrast. In a monotonous visual field, color is the strongest interrupt.</p>
+        </div>
+
+        <!-- Interactive Container -->
+        <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 max-w-3xl w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-300">Test Subject: Visual Grid</h3>
+                <button onclick="reshuffleColor()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition">
+                    <i class="fa-solid fa-shuffle mr-2"></i> Randomize
+                </button>
+            </div>
+
+            <!-- The Grid -->
+            <div id="color-grid" class="grid grid-cols-5 sm:grid-cols-8 gap-3 sm:gap-4 transition-all duration-300">
+                <!-- Javascript will populate this -->
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p id="color-feedback" class="text-sm font-mono text-gray-400 h-6">Click the unique item...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: MOTION ISOLATION -->
+    <section id="motion" class="min-h-screen flex flex-col items-center justify-center py-20 relative bg-slate-900 border-t border-white/5">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white"><span class="text-lab-success">02.</span> Motion Isolation</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto px-4">Even peripheral vision is highly sensitive to movement. Motion signals "change" or "danger," overriding static information.</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-8 max-w-5xl w-full px-4">
+            <!-- Control Panel -->
+            <div class="w-full md:w-1/3 bg-slate-800 p-6 rounded-xl border border-slate-700 h-fit">
+                <h3 class="text-xl font-bold mb-4">Dashboard</h3>
+                <p class="text-sm text-gray-400 mb-6">Try to find the critical alert in the list. Notice how your eye ignores the static text?</p>
+                <button onclick="toggleMotion()" id="motion-btn" class="w-full bg-lab-success hover:bg-green-500 text-slate-900 font-bold py-3 rounded-lg transition">
+                    Start Motion
+                </button>
+            </div>
+
+            <!-- The List -->
+            <div class="w-full md:w-2/3 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl">
+                <div class="bg-slate-950 px-6 py-4 border-b border-slate-700">
+                    <span class="font-mono text-xs text-gray-500">SYSTEM LOGS // REALTIME</span>
+                </div>
+                <div id="motion-list" class="divide-y divide-slate-700 max-h-[400px] overflow-y-auto">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: FOCUS / DEPTH -->
+    <section id="focus" class="min-h-screen flex flex-col items-center justify-center py-20 relative bg-slate-950 border-t border-white/5 overflow-hidden">
+        <div class="text-center mb-8 relative z-20">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white"><span class="text-lab-accent">03.</span> Visual Clarity</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto px-4">Reducing cognitive load by blurring non-essential elements. Use your mouse as a flashlight.</p>
+        </div>
+
+        <!-- The Document Container -->
+        <div class="relative max-w-4xl w-full mx-4 h-[500px] bg-white text-slate-900 rounded-sm shadow-2xl overflow-hidden cursor-none" id="focus-container">
+            
+            <!-- Content Layer -->
+            <div class="p-12 md:p-16 h-full overflow-hidden" id="focus-content">
+                <h1 class="text-4xl font-serif font-bold mb-6 border-b pb-4">The Cognitive Load Theory</h1>
+                <div class="grid grid-cols-2 gap-8 text-sm md:text-base leading-relaxed text-gray-600 font-serif text-justify">
+                    <p>
+                        In cognitive psychology, cognitive load refers to the amount of working memory resources used. Generally, there are three types of cognitive load: intrinsic, extraneous, and germane. Intrinsic cognitive load is the effort associated with a specific topic. Extraneous cognitive load refers to the way information or tasks are presented to a learner.
+                        <br><br>
+                        <strong>The Von Restorff effect</strong> suggests that by isolating key information, we reduce extraneous load. When a user is presented with a wall of text, decision paralysis can occur. By visually suppressing the "noise" and highlighting the "signal," we guide the user's mental model.
+                    </p>
+                    <p>
+                        Web designers use this by dimming background content when a modal opens, or by using whitespace to separate distinct ideas. The "Flashlight" effect you are currently experiencing forces a linear progression of reading, preventing scanning and encouraging deep focus.
+                        <br><br>
+                        This technique is often used in "Onboarding Tours" where specific buttons are highlighted while the rest of the interface is darkened. It ensures the user cannot ignore the instruction being given.
+                    </p>
+                    <div class="col-span-2 mt-4 p-4 bg-gray-100 border-l-4 border-blue-500">
+                        <h4 class="font-bold text-gray-800">Key Takeaway:</h4>
+                        <p>Don't just show information. Curate the attention. If everything is bold, nothing is bold.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Flashlight Overlay -->
+            <div id="flashlight" class="spotlight-overlay"></div>
+            
+            <!-- Instructions Overlay (Disappears on hover) -->
+            <div id="focus-instruction" class="absolute inset-0 flex items-center justify-center bg-black/60 z-30 pointer-events-none transition-opacity duration-500">
+                <div class="text-white text-center">
+                    <i class="fa-regular fa-lightbulb text-4xl mb-2 animate-bounce"></i>
+                    <p class="font-bold">Hover over the document</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    
+    <!-- SECTION 4: MEMORY RETENTION -->
+    <section id="memory" class="min-h-screen flex flex-col items-center justify-center py-20 relative bg-slate-900 border-t border-white/5">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white"><span class="text-lab-warning">04.</span> Memory Retention</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto px-4">Isolation doesn't just attract attention; it encodes memories. Test your classmates now.</p>
+        </div>
+
+        <div class="max-w-4xl w-full mx-4 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-2xl relative min-h-[400px] flex flex-col">
+            
+            <!-- Header Bar -->
+            <div class="bg-slate-950 px-6 py-3 border-b border-slate-700 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                <div class="text-xs font-mono text-gray-500">PROTOCOL: MNEMONIC_TEST_01</div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 p-8 flex items-center justify-center relative">
+                
+                <!-- STATE 1: Start Button -->
+                <div id="mem-start-view" class="text-center">
+                    <i class="fa-solid fa-stopwatch text-6xl text-gray-600 mb-6"></i>
+                    <h3 class="text-2xl font-bold text-white mb-2">Class Experiment</h3>
+                    <p class="text-gray-400 mb-8 max-w-md mx-auto">Click start. A list of 12 items will appear for exactly 4 seconds. Ask the class which one they remember.</p>
+                    <button onclick="startMemoryTest()" class="bg-lab-warning hover:bg-amber-600 text-slate-900 font-bold py-3 px-10 rounded-full transition transform hover:scale-105">
+                        Initialize Test
+                    </button>
+                </div>
+
+                <!-- STATE 2: The Grid (Hidden initially) -->
+                <div id="mem-grid-view" class="hidden w-full h-full">
+                    <div id="mem-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+                        <!-- JS Populated -->
+                    </div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-slate-700">
+                        <div id="mem-timer" class="h-full bg-lab-warning w-full"></div>
+                    </div>
+                </div>
+
+                <!-- STATE 3: Recall (Hidden initially) -->
+                <div id="mem-recall-view" class="hidden text-center w-full">
+                    <div class="mb-8">
+                        <i class="fa-solid fa-lock text-5xl text-gray-500 mb-4"></i>
+                        <h2 class="text-3xl font-bold text-white">Time's Up.</h2>
+                        <p class="text-xl text-gray-300 mt-2">"What was the odd item out?"</p>
+                    </div>
+                    <div id="mem-answer" class="hidden mt-8 p-6 bg-slate-900 border border-lab-warning rounded-xl animate-bounce">
+                        <p class="text-sm text-gray-500 uppercase tracking-widest mb-1">Target Identified</p>
+                        <h3 id="mem-target-text" class="text-3xl font-bold text-lab-warning"></h3>
+                    </div>
+                    <button onclick="revealAnswer()" id="mem-reveal-btn" class="mt-4 border border-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition">
+                        Reveal Answer
+                    </button>
+                    <button onclick="resetMemoryTest()" class="mt-4 ml-2 text-gray-500 hover:text-white px-4 py-2 text-sm">
+                        Reset
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 py-8 border-t border-white/5 text-center">
+        <p class="text-gray-500 text-sm">Interactive Psychology Demo | Hosted on GitHub Pages</p>
+    </footer>
+
+    <script>
+        /* --- SECTION 1: COLOR LOGIC --- */
+        const grid = document.getElementById('color-grid');
+        const feedback = document.getElementById('color-feedback');
+        
+        function reshuffleColor() {
+            grid.innerHTML = '';
+            const totalItems = 40;
+            const targetIndex = Math.floor(Math.random() * totalItems);
+            
+            for (let i = 0; i < totalItems; i++) {
+                const div = document.createElement('div');
+                // Base classes
+                let classes = "h-10 w-10 sm:h-12 sm:w-12 rounded-lg cursor-pointer transition-transform hover:scale-110 flex items-center justify-center shadow-md";
+                
+                if (i === targetIndex) {
+                    // The "Von Restorff" Item
+                    div.className = `${classes} bg-lab-danger shadow-red-500/50`;
+                    div.innerHTML = '<i class="fa-solid fa-check text-white text-lg"></i>';
+                    div.onclick = () => {
+                        feedback.textContent = "Found it! Contrast captures attention immediately.";
+                        feedback.className = "text-sm font-bold text-lab-danger h-6";
+                        confettiEffect(div);
+                    };
+                } else {
+                    // The "Noise" Items
+                    div.className = `${classes} bg-slate-600 hover:bg-slate-500`;
+                    div.onclick = () => {
+                        feedback.textContent = "Not this one. Try finding the unique color.";
+                        feedback.className = "text-sm font-mono text-gray-400 h-6";
+                    };
+                }
+                grid.appendChild(div);
+            }
+        }
+        
+        // Initial load
+        reshuffleColor();
+        
+        // Simple visual feedback
+        function confettiEffect(element) {
+            element.style.transform = "scale(1.2) rotate(10deg)";
+            setTimeout(() => element.style.transform = "scale(1) rotate(0)", 200);
+        }
+
+        /* --- SECTION 2: MOTION LOGIC --- */
+        const motionList = document.getElementById('motion-list');
+        const motionBtn = document.getElementById('motion-btn');
+        let isMoving = false;
+
+        const logItems = [
+            { icon: 'fa-server', text: 'Server US-East-1 status normal', time: '10:42:01' },
+            { icon: 'fa-database', text: 'Database backup completed', time: '10:42:05' },
+            { icon: 'fa-network-wired', text: 'Latency jitter observed in cluster B', time: '10:42:12' },
+            { icon: 'fa-shield-halved', text: 'Firewall definition updated', time: '10:42:15' },
+            { icon: 'fa-triangle-exclamation', text: 'CRITICAL ERROR: KERNEL PANIC', time: '10:42:18', isTarget: true }, // Target
+            { icon: 'fa-user-check', text: 'User admin_01 logged in', time: '10:42:22' },
+            { icon: 'fa-code-branch', text: 'Repository sync successful', time: '10:42:25' },
+            { icon: 'fa-envelope', text: 'Email queue processed', time: '10:42:30' },
+        ];
+
+        function renderMotionList() {
+            motionList.innerHTML = '';
+            logItems.forEach(item => {
+                const row = document.createElement('div');
+                row.className = "p-4 flex items-center gap-4 hover:bg-slate-800 transition bg-slate-900";
+                
+                let iconClass = "text-gray-500";
+                if (item.isTarget) iconClass = "text-yellow-500"; // Slight color hint, but motion is key
+
+                row.innerHTML = `
+                    <div class="text-xs font-mono text-gray-600">${item.time}</div>
+                    <div class="${iconClass} text-lg"><i class="fa-solid ${item.icon}"></i></div>
+                    <div class="text-sm text-gray-300 font-mono flex-1">${item.text}</div>
+                    <div class="w-2 h-2 rounded-full bg-green-500 opacity-50"></div>
+                `;
+
+                if (item.isTarget) {
+                    row.id = "moving-target";
+                }
+                motionList.appendChild(row);
+            });
+        }
+
+        function toggleMotion() {
+            const target = document.getElementById('moving-target');
+            const icon = target.querySelector('i');
+            
+            if (!isMoving) {
+                // Start Motion
+                icon.classList.add('animate-shake-custom', 'text-lab-danger');
+                target.classList.add('bg-slate-800', 'border-l-4', 'border-lab-danger');
+                motionBtn.textContent = "Stop Motion";
+                motionBtn.classList.replace('bg-lab-success', 'bg-lab-danger');
+                motionBtn.classList.replace('hover:bg-green-500', 'hover:bg-red-500');
+            } else {
+                // Stop Motion
+                icon.classList.remove('animate-shake-custom', 'text-lab-danger');
+                target.classList.remove('bg-slate-800', 'border-l-4', 'border-lab-danger');
+                motionBtn.textContent = "Start Motion";
+                motionBtn.classList.replace('bg-lab-danger', 'bg-lab-success');
+                motionBtn.classList.replace('hover:bg-red-500', 'hover:bg-green-500');
+            }
+            isMoving = !isMoving;
+        }
+
+        renderMotionList();
+
+        /* --- SECTION 3: FOCUS LOGIC --- */
+        const focusContainer = document.getElementById('focus-container');
+        const flashlight = document.getElementById('flashlight');
+        const instruction = document.getElementById('focus-instruction');
+
+        focusContainer.addEventListener('mousemove', (e) => {
+            // Hide instruction overlay on first move
+            instruction.style.opacity = '0';
+
+            // Get mouse position relative to container
+            const rect = focusContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Move the gradient center
+            flashlight.style.setProperty('--x', x + 'px');
+            flashlight.style.setProperty('--y', y + 'px');
+        });
+        
+        focusContainer.addEventListener('mouseleave', () => {
+             instruction.style.opacity = '1';
+        });
+
+        /* --- SECTION 4: MEMORY LOGIC --- */
+        const memStartView = document.getElementById('mem-start-view');
+        const memGridView = document.getElementById('mem-grid-view');
+        const memRecallView = document.getElementById('mem-recall-view');
+        const memGrid = document.getElementById('mem-grid');
+        const memTimer = document.getElementById('mem-timer');
+        const memAnswerBox = document.getElementById('mem-answer');
+        const memTargetText = document.getElementById('mem-target-text');
+        const memRevealBtn = document.getElementById('mem-reveal-btn');
+
+        const fileNames = ["report_q1.pdf", "invoice_001.pdf", "notes_may.txt", "budget_v2.xlsx", "schedule.cal", "readme.md", "logo_black.png", "script.js", "styles.css", "footer.php", "index.html"];
+        const oddities = [
+            { text: "☢️ NUCLEAR_CODES", icon: "fa-radiation" },
+            { text: "👽 AREA_51_MAP", icon: "fa-user-astronaut" },
+            { text: "🧟 ZOMBIE_CURE", icon: "fa-biohazard" },
+            { text: "💰 LOTTERY_WINNER", icon: "fa-sack-dollar" }
+        ];
+
+        let currentTarget = null;
+
+        function startMemoryTest() {
+            // 1. Reset Views
+            memStartView.classList.add('hidden');
+            memRecallView.classList.add('hidden');
+            memGridView.classList.remove('hidden');
+            memAnswerBox.classList.add('hidden');
+            memRevealBtn.classList.remove('hidden');
+            
+            // 2. Select random oddity
+            const oddity = oddities[Math.floor(Math.random() * oddities.length)];
+            currentTarget = oddity.text;
+            
+            // 3. Populate Grid (11 normal + 1 oddity = 12 items)
+            memGrid.innerHTML = '';
+            
+            // Create a shuffled array of indices
+            let items = [...fileNames]; 
+            // Add the oddity
+            items.push(oddity.text); 
+            // Shuffle
+            items.sort(() => Math.random() - 0.5);
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-700/50 p-4 rounded-lg flex items-center gap-3 border border-slate-600";
+                
+                let icon = "fa-file";
+                let textColor = "text-gray-300";
+                
+                // Check if this is the oddity
+                if (item === oddity.text) {
+                     icon = oddity.icon;
+                     textColor = "text-lab-warning font-bold";
+                     div.className += " border-lab-warning bg-lab-warning/10";
+                } else if (item.endsWith('.pdf')) icon = "fa-file-pdf";
+                else if (item.endsWith('.txt')) icon = "fa-file-lines";
+                else if (item.endsWith('.xlsx')) icon = "fa-file-excel";
+                else if (item.endsWith('.png')) icon = "fa-image";
+                else if (item.endsWith('.js') || item.endsWith('.html')) icon = "fa-file-code";
+
+                div.innerHTML = `
+                    <i class="fa-solid ${icon} ${textColor} text-xl"></i>
+                    <span class="text-xs sm:text-sm font-mono truncate ${textColor}">${item}</span>
+                `;
+                memGrid.appendChild(div);
+            });
+
+            // 4. Start Timer Animation
+            memTimer.style.transition = 'none';
+            memTimer.style.width = '100%';
+            setTimeout(() => {
+                memTimer.style.transition = 'width 4s linear';
+                memTimer.style.width = '0%';
+            }, 100);
+
+            // 5. End Test after 4 seconds
+            setTimeout(() => {
+                memGridView.classList.add('hidden');
+                memRecallView.classList.remove('hidden');
+            }, 4100);
+        }
+
+        function revealAnswer() {
+            memTargetText.textContent = currentTarget;
+            memAnswerBox.classList.remove('hidden');
+            memRevealBtn.classList.add('hidden');
+        }
+
+        function resetMemoryTest() {
+            memRecallView.classList.add('hidden');
+            memStartView.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
