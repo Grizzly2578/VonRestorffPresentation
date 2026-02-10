@@ -1,5 +1,6 @@
 # The Von Restorff Experience 🧠
 https://grizzly2578.github.io/VonRestorffPresentation/
+
 **An Interactive Psychology Presentation**
 
 This project is a standalone, interactive web presentation designed to demonstrate the **Von Restorff Effect** (also known as the Isolation Effect). It uses visual experiments to prove to an audience that *items that stand out are more likely to be remembered.*
