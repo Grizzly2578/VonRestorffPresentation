@@ -17,9 +17,9 @@ Since you aren't hosting this online, you can run it directly from your computer
 
 *> Note: The project uses Tailwind CSS and FontAwesome via CDN. You will need an active internet connection when you open the file for the styling and icons to load. Once loaded, it will stay working as long as you don't refresh without internet.*
 
-## 🎤 Class Presentation Script & Controls
+## 🎤  Controls
 
-Use this guide while presenting to your class.
+Use this guide.
 
 ### 1. Introduction (The Hook)
 
