@@ -303,18 +303,18 @@
     <section id="speed" class="min-h-screen flex flex-col items-center justify-center py-20 relative bg-slate-950 border-t border-white/5">
         <div class="text-center mb-8">
             <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white"><span class="text-red-500">05.</span> The Blink Test</h2>
-            <p class="text-gray-400 max-w-2xl mx-auto px-4">Can you spot the anomaly in 200 milliseconds? Test your raw processing speed.</p>
+            <p class="text-gray-400 max-w-2xl mx-auto px-4">Can you spot the anomaly in milliseconds? Test your raw processing speed.</p>
         </div>
 
         <div class="max-w-5xl w-full mx-4 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative min-h-[500px] flex flex-col">
             
             <!-- Header -->
             <div class="bg-slate-950 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                <span class="text-xs font-mono text-red-500 animate-pulse">LIVE FEED // 200ms EXPOSURE</span>
+                <span class="text-xs font-mono text-red-500 animate-pulse">LIVE FEED // HIGH SPEED CAMERA</span>
                 <div class="flex gap-2">
-                    <button onclick="setLevel(1)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 1 (Color)</button>
-                    <button onclick="setLevel(2)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 2 (Shape)</button>
-                    <button onclick="setLevel(3)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 3 (Emotion)</button>
+                    <button onclick="setLevel(1)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 1 (0.1s)</button>
+                    <button onclick="setLevel(2)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 2 (0.2s)</button>
+                    <button onclick="setLevel(3)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 3 (0.3s)</button>
                 </div>
             </div>
 
@@ -325,7 +325,7 @@
                     <h3 id="level-title" class="text-2xl font-bold text-white mb-2">Level 1: Color Isolation</h3>
                     <p class="text-gray-400 mb-6">Find the <span class="text-red-500 font-bold">RED</span> item.</p>
                     <button onclick="startBlinkTest()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg shadow-red-900/20 transition transform hover:scale-105 active:scale-95">
-                        BLINK (0.2s)
+                        BLINK
                     </button>
                 </div>
 
@@ -596,9 +596,9 @@
         function setLevel(lvl) {
             currentLevel = lvl;
             resetSpeedTest();
-            if(lvl === 1) levelTitle.innerHTML = 'Level 1: Color Isolation <br><span class="text-sm font-normal text-gray-400">Find the RED item</span>';
-            if(lvl === 2) levelTitle.innerHTML = 'Level 2: Shape Isolation <br><span class="text-sm font-normal text-gray-400">Find the TRIANGLE</span>';
-            if(lvl === 3) levelTitle.innerHTML = 'Level 3: Emotional Isolation <br><span class="text-sm font-normal text-gray-400">Find the SAD face</span>';
+            if(lvl === 1) levelTitle.innerHTML = 'Level 1: Color Isolation <br><span class="text-sm font-normal text-gray-400">Find the RED item (0.1s)</span>';
+            if(lvl === 2) levelTitle.innerHTML = 'Level 2: Shape Isolation <br><span class="text-sm font-normal text-gray-400">Find the TRIANGLE (0.2s)</span>';
+            if(lvl === 3) levelTitle.innerHTML = 'Level 3: Emotional Isolation <br><span class="text-sm font-normal text-gray-400">Find the SAD face (0.3s)</span>';
         }
 
         function startBlinkTest() {
@@ -642,7 +642,7 @@
                     // DISTRACTORS
                     if (currentLevel === 1) div.innerHTML = '<i class="fa-solid fa-circle text-gray-600"></i>';
                     if (currentLevel === 2) div.innerHTML = '<i class="fa-solid fa-square text-gray-600 text-xl"></i>';
-                    if (currentLevel === 3) div.innerHTML = '<span class="text-3xl grayscale opacity-50">🙂</span>';
+                    if (currentLevel === 3) div.innerHTML = '<span class="text-3xl">🙂</span>';
                 }
                 speedGrid.appendChild(div);
             }
@@ -650,8 +650,11 @@
 
         function doFlash() {
             speedGrid.classList.remove('hidden');
-            // Exposure time: 200ms for L1/L2, 400ms for L3 (harder)
-            const exposure = currentLevel === 3 ? 400 : 200; 
+            // Exposure time: 100ms for L1, 200ms for L2, 300ms for L3
+            let exposure = 200;
+            if (currentLevel === 1) exposure = 100;
+            if (currentLevel === 2) exposure = 200;
+            if (currentLevel === 3) exposure = 300; 
             
             setTimeout(() => {
                 speedGrid.classList.add('hidden');
