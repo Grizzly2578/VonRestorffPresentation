@@ -312,9 +312,9 @@
             <div class="bg-slate-950 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
                 <span class="text-xs font-mono text-red-500 animate-pulse">LIVE FEED // HIGH SPEED CAMERA</span>
                 <div class="flex gap-2">
-                    <button onclick="setLevel(1)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 1 (0.1s)</button>
-                    <button onclick="setLevel(2)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 2 (0.2s)</button>
-                    <button onclick="setLevel(3)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 3 (0.3s)</button>
+                    <button onclick="setLevel(1)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 1</button>
+                    <button onclick="setLevel(2)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 2</button>
+                    <button onclick="setLevel(3)" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white border border-slate-700">Lvl 3</button>
                 </div>
             </div>
 
@@ -324,6 +324,12 @@
                 <div id="speed-start" class="text-center z-20">
                     <h3 id="level-title" class="text-2xl font-bold text-white mb-2">Level 1: Color Isolation</h3>
                     <p class="text-gray-400 mb-6">Find the <span class="text-red-500 font-bold">RED</span> item.</p>
+                    
+                    <div class="mb-6">
+                        <label class="text-gray-400 text-sm block mb-1">Exposure Time (ms)</label>
+                        <input type="number" id="custom-duration" value="100" step="50" min="50" max="5000" class="bg-slate-800 border border-slate-600 text-white text-center rounded px-3 py-2 w-32 focus:outline-none focus:border-lab-accent">
+                    </div>
+
                     <button onclick="startBlinkTest()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg shadow-red-900/20 transition transform hover:scale-105 active:scale-95">
                         BLINK
                     </button>
@@ -596,9 +602,20 @@
         function setLevel(lvl) {
             currentLevel = lvl;
             resetSpeedTest();
-            if(lvl === 1) levelTitle.innerHTML = 'Level 1: Color Isolation <br><span class="text-sm font-normal text-gray-400">Find the RED item (0.1s)</span>';
-            if(lvl === 2) levelTitle.innerHTML = 'Level 2: Shape Isolation <br><span class="text-sm font-normal text-gray-400">Find the TRIANGLE (0.2s)</span>';
-            if(lvl === 3) levelTitle.innerHTML = 'Level 3: Emotional Isolation <br><span class="text-sm font-normal text-gray-400">Find the SAD face (0.3s)</span>';
+            const durationInput = document.getElementById('custom-duration');
+            
+            if(lvl === 1) {
+                levelTitle.innerHTML = 'Level 1: Color Isolation <br><span class="text-sm font-normal text-gray-400">Find the RED item</span>';
+                if(durationInput) durationInput.value = 100;
+            }
+            if(lvl === 2) {
+                levelTitle.innerHTML = 'Level 2: Shape Isolation <br><span class="text-sm font-normal text-gray-400">Find the TRIANGLE</span>';
+                if(durationInput) durationInput.value = 200;
+            }
+            if(lvl === 3) {
+                levelTitle.innerHTML = 'Level 3: Emotional Isolation <br><span class="text-sm font-normal text-gray-400">Find the SAD face</span>';
+                if(durationInput) durationInput.value = 300;
+            }
         }
 
         function startBlinkTest() {
@@ -650,11 +667,8 @@
 
         function doFlash() {
             speedGrid.classList.remove('hidden');
-            // Exposure time: 100ms for L1, 200ms for L2, 300ms for L3
-            let exposure = 200;
-            if (currentLevel === 1) exposure = 100;
-            if (currentLevel === 2) exposure = 200;
-            if (currentLevel === 3) exposure = 300; 
+            // Exposure time: Get from input
+            let exposure = parseInt(document.getElementById('custom-duration').value) || 200;
             
             setTimeout(() => {
                 speedGrid.classList.add('hidden');
